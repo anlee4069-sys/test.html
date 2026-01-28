@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>尾牙抽獎</title>
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #111;
+  color: white;
+  text-align: center;
+}
+h1 { margin: 20px 0; }
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 120px);
+  gap: 15px;
+  justify-content: center;
+  padding: 20px;
+}
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #444;
+}
+button {
+  font-size: 20px;
+  padding: 10px 30px;
+  margin: 10px;
+  cursor: pointer;
+}
+#winner {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#winner img {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 8px solid gold;
+}
+</style>
+</head>
+
+<body>
+<h1>🎉 尾牙抽獎 🎉</h1>
+
+<input type="file" accept="image/*" onchange="addPhoto(event)">
+<br>
+<button onclick="draw()">開始抽獎</button>
+
+<div id="grid"></div>
+
+<div id="winner" onclick="this.style.display='none'">
+  <h1>🎊 得獎者 🎊</h1>
+  <img id="winnerImg">
+</div>
+
+<script>
+let players = [];
+
+function addPhoto(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    players.push(reader.result);
+    render();
+  };
+  reader.readAsDataURL(file);
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  players.forEach(p => {
+    const img = document.createElement('img');
+    img.src = p;
+    img.className = 'avatar';
+    grid.appendChild(img);
+  });
+}
+
+function draw() {
+  if (players.length === 0) {
+    alert('還沒有人喔');
+    return;
+  }
+  const index = Math.floor(Math.random() * players.length);
+  const winner = players.splice(index, 1)[0];
+  document.getElementById('winnerImg').src = winner;
+  document.getElementById('winner').style.display = 'flex';
+  render();
+}
+</script>
+</body>
+</html>
