@@ -5,128 +5,70 @@
 <title>2026 研發部尾牙抽獎</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: "Microsoft JhengHei", sans-serif;
-  background: #b30000;
-  color: gold;
-  text-align: center;
-  overflow-x: hidden;
+body{
+  margin:0;
+  font-family:"Microsoft JhengHei",sans-serif;
+  background:#b30000;
+  color:gold;
+  text-align:center;
+}
+h1{font-size:56px;margin:30px 0}
+#desc{font-size:22px;color:#fff2b3;line-height:1.8}
+
+#controls input,button{
+  font-size:22px;
+  padding:10px 16px;
+  margin:6px;
 }
 
-/* 金色亮粉 */
-.sparkle {
-  position: fixed;
-  width: 4px;
-  height: 4px;
-  background: gold;
-  opacity: 0.8;
-  animation: float 6s linear infinite;
-}
-@keyframes float {
-  from { transform: translateY(100vh); }
-  to { transform: translateY(-10vh); opacity: 0; }
+button{background:gold;border:none;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+
+#grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,160px);
+  gap:20px;
+  justify-content:center;
+  padding:30px;
 }
 
-h1 {
-  font-size: 56px;
-  margin: 30px 0 20px;
+.player{
+  transition:.4s;
+}
+.player.won{
+  opacity:.35;
+  filter:grayscale(100%);
 }
 
-#desc {
-  font-size: 22px;
-  line-height: 1.8;
-  color: #fff2b3;
+.avatar{
+  width:140px;height:140px;
+  border-radius:50%;
+  border:5px solid gold;
+  object-fit:cover;
+}
+.name{
+  font-size:20px;color:white;margin-top:6px;
 }
 
-#grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 160px);
-  gap: 20px;
-  justify-content: center;
-  padding: 30px;
+/* 倒數與抽獎畫面 */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:10;
 }
 
-.avatar {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 5px solid gold;
-  object-fit: cover;
+#countNum{font-size:160px}
+#slot img,#winner img{
+  width:300px;height:300px;
+  border-radius:50%;
+  border:8px solid gold;
 }
-
-.name {
-  font-size: 20px;
-  margin-top: 8px;
-  color: #fff;
-}
-
-/* 按鈕 */
-button {
-  font-size: 26px;
-  padding: 14px 28px;
-  margin: 20px;
-  background: gold;
-  border: none;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* 倒數 */
-#countdown {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 160px;
-  z-index: 10;
-}
-
-/* 跑馬燈 */
-#slot, #winner {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 20;
-}
-
-#slot img, #winner img {
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  border: 8px solid gold;
-}
-
-#prizeText {
-  font-size: 40px;
-  margin-bottom: 20px;
-}
-
-#summary {
-  display: none;
-  padding: 40px;
-  font-size: 24px;
-}
-
-table {
-  margin: auto;
-  border-collapse: collapse;
-}
-
-td, th {
-  border: 2px solid gold;
-  padding: 12px 24px;
-}
+#prizeText{font-size:42px;margin-bottom:20px}
+#winnerName{font-size:42px;color:white}
 </style>
 </head>
 
@@ -136,140 +78,128 @@ td, th {
 
 <div id="desc">
 獎金依序抽出（系統自動）：<br>
-1200×4 → 2000×4 → 3000×3 → 5000 → 7000 → 10000<br><br>
-🎯 每人僅一次機會，抽中即移除
+1200×4 → 2000×4 → 3000×3 → 5000 → 7000 → 10000<br>
+🎯 每人僅一次機會，抽中即標示
 </div>
 
-<input type="file" accept="image/*" onchange="addPlayer(event)">
-<input id="nameInput" placeholder="輸入名字" style="font-size:22px;">
-<br>
-<button id="drawBtn" onclick="startDraw()">開始抽獎</button>
+<div id="controls">
+  <input id="photo" type="file" accept="image/*">
+  <input id="nameInput" placeholder="輸入姓名">
+  <button onclick="addPlayer()">加入</button>
+  <br>
+  <button id="drawBtn" onclick="startDraw()">開始抽獎</button>
+</div>
 
 <div id="grid"></div>
 
-<div id="countdown"></div>
+<div id="countdown" class="overlay">
+  <div id="prizeText"></div>
+  <div id="countNum"></div>
+</div>
 
-<div id="slot">
+<div id="slot" class="overlay">
   <div id="prizeText"></div>
   <img id="slotImg">
 </div>
 
-<div id="winner" onclick="this.style.display='none'">
+<div id="winner" class="overlay" onclick="this.style.display='none'">
   <div id="prizeText"></div>
   <img id="winnerImg">
-  <h2 id="winnerName" style="font-size:40px;color:white;"></h2>
-</div>
-
-<div id="summary">
-  <h1>🎊 中獎名單 🎊</h1>
-  <table>
-    <thead><tr><th>姓名</th><th>金額</th></tr></thead>
-    <tbody id="resultTable"></tbody>
-  </table>
+  <div id="winnerName"></div>
 </div>
 
 <script>
-let players = [];
-let results = [];
+let players=[];
+let activePlayers=[];
+let locked=false;
 
-/* 獎金池（不可重複） */
-let prizePool = [
+let prizePool=[
   ...Array(4).fill(1200),
   ...Array(4).fill(2000),
   ...Array(3).fill(3000),
-  5000, 7000, 10000
+  5000,7000,10000
 ];
 
-function addPlayer(e) {
-  const name = nameInput.value.trim();
-  if (!name) return alert("請輸入名字");
-  const reader = new FileReader();
-  reader.onload = () => {
-    players.push({ name, img: reader.result });
+function addPlayer(){
+  if(locked) return alert("抽獎已開始，名單已鎖定");
+  const file=photo.files[0];
+  const name=nameInput.value.trim();
+  if(!file||!name) return;
+
+  const r=new FileReader();
+  r.onload=()=>{
+    const p={name,img:r.result,won:false};
+    players.push(p);
+    activePlayers.push(p);
     render();
-    nameInput.value = "";
+    nameInput.value="";photo.value="";
   };
-  reader.readAsDataURL(e.target.files[0]);
+  r.readAsDataURL(file);
 }
 
-function render() {
-  grid.innerHTML = "";
-  players.forEach(p => {
-    grid.innerHTML += `
-      <div>
+function render(){
+  grid.innerHTML="";
+  players.forEach(p=>{
+    grid.innerHTML+=`
+      <div class="player ${p.won?"won":""}">
         <img class="avatar" src="${p.img}">
         <div class="name">${p.name}</div>
       </div>`;
   });
 }
 
-function startDraw() {
-  if (!players.length || !prizePool.length) return;
-  drawBtn.disabled = true;
+function startDraw(){
+  if(!activePlayers.length||!prizePool.length) return;
+  locked=true;
+  drawBtn.disabled=true;
   countdown(3);
 }
 
-function countdown(n) {
-  countdownEl.style.display = "flex";
-  countdownEl.innerText = n;
-  if (n > 1) {
-    setTimeout(() => countdown(n - 1), 1000);
-  } else {
-    setTimeout(() => {
-      countdownEl.style.display = "none";
+function countdown(n){
+  const prize=prizePool[0];
+  countdown.style.display="flex";
+  prizeText.innerText=`💰 ${prize} 元 得獎的是…`;
+  countNum.innerText=n;
+  if(n>1){
+    setTimeout(()=>countdown(n-1),1000);
+  }else{
+    setTimeout(()=>{
+      countdown.style.display="none";
       slot();
-    }, 1000);
+    },1000);
   }
 }
 
-function slot() {
-  const prize = prizePool[0];
-  prizeText.innerText = `💰 本次獎金：${prize} 元`;
-  slotEl.style.display = "flex";
+function slot(){
+  const prize=prizePool[0];
+  slot.style.display="flex";
+  prizeText.innerText=`💰 ${prize} 元 得獎的是…`;
 
-  const timer = setInterval(() => {
-    slotImg.src = players[Math.random() * players.length | 0].img;
-  }, 100);
+  const t=setInterval(()=>{
+    slotImg.src=activePlayers[Math.random()*activePlayers.length|0].img;
+  },100);
 
-  setTimeout(() => {
-    clearInterval(timer);
-    slotEl.style.display = "none";
-    draw(prize);
-  }, 2000);
+  setTimeout(()=>{
+    clearInterval(t);
+    slot.style.display="none";
+    drawWinner();
+  },2000);
 }
 
-function draw(prize) {
-  prizePool.shift();
-  const i = Math.random() * players.length | 0;
-  const w = players.splice(i, 1)[0];
-  results.push({ name: w.name, prize });
+function drawWinner(){
+  const prize=prizePool.shift();
+  const i=Math.random()*activePlayers.length|0;
+  const w=activePlayers.splice(i,1)[0];
+  w.won=true;
 
-  winnerImg.src = w.img;
-  winnerName.innerText = w.name;
-  prizeText.innerText = `🎉 中獎金額：${prize} 元`;
-  winner.style.display = "flex";
+  winnerImg.src=w.img;
+  winnerName.innerText=w.name;
+  prizeText.innerText=`🎉 恭喜獲得 ${prize} 元`;
+  winner.style.display="flex";
 
   render();
-  drawBtn.disabled = false;
-
-  if (!prizePool.length) showSummary();
+  drawBtn.disabled=false;
 }
-
-function showSummary() {
-  summary.style.display = "block";
-  results.forEach(r => {
-    resultTable.innerHTML += `<tr><td>${r.name}</td><td>${r.prize}</td></tr>`;
-  });
-}
-
-/* 金色亮粉 */
-setInterval(() => {
-  const s = document.createElement("div");
-  s.className = "sparkle";
-  s.style.left = Math.random() * window.innerWidth + "px";
-  document.body.appendChild(s);
-  setTimeout(() => s.remove(), 6000);
-}, 120);
 </script>
 
 </body>
