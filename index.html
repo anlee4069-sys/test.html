@@ -8,78 +8,88 @@
 body {
   margin: 0;
   font-family: "Microsoft JhengHei", sans-serif;
-  background: radial-gradient(circle at top, #b30000, #3a0000);
+  background: #b30000;
   color: gold;
   text-align: center;
+  overflow-x: hidden;
+}
+
+/* 金色亮粉 */
+.sparkle {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  background: gold;
+  opacity: 0.8;
+  animation: float 6s linear infinite;
+}
+@keyframes float {
+  from { transform: translateY(100vh); }
+  to { transform: translateY(-10vh); opacity: 0; }
 }
 
 h1 {
-  font-size: 42px;
-  margin: 20px 0 10px;
+  font-size: 56px;
+  margin: 30px 0 20px;
 }
 
 #desc {
-  color: #ffe9a8;
-  font-size: 18px;
-  line-height: 1.7;
-}
-
-#controls {
-  margin: 20px;
-}
-
-select, button, input {
-  font-size: 18px;
-  padding: 8px;
-  margin: 5px;
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  font-size: 22px;
+  line-height: 1.8;
+  color: #fff2b3;
 }
 
 #grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 140px);
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, 160px);
+  gap: 20px;
   justify-content: center;
-  padding: 20px;
-}
-
-.card {
-  text-align: center;
+  padding: 30px;
 }
 
 .avatar {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  border: 4px solid gold;
+  border: 5px solid gold;
   object-fit: cover;
 }
 
 .name {
-  margin-top: 6px;
-  font-size: 16px;
+  font-size: 20px;
+  margin-top: 8px;
   color: #fff;
+}
+
+/* 按鈕 */
+button {
+  font-size: 26px;
+  padding: 14px 28px;
+  margin: 20px;
+  background: gold;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* 倒數 */
 #countdown {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.88);
+  background: rgba(0,0,0,0.9);
   display: none;
   align-items: center;
   justify-content: center;
-  font-size: 120px;
-  color: gold;
+  font-size: 160px;
   z-index: 10;
 }
 
 /* 跑馬燈 */
-#slot {
+#slot, #winner {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.9);
@@ -87,76 +97,35 @@ button:disabled {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  z-index: 15;
-}
-
-#slot img {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 6px solid gold;
-}
-
-/* 得獎畫面 */
-#winner {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
   z-index: 20;
 }
 
-#winner img {
-  width: 260px;
-  height: 260px;
+#slot img, #winner img {
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   border: 8px solid gold;
 }
 
-#winner h2 {
-  margin: 10px 0;
-  color: #fff;
-}
-
 #prizeText {
-  font-size: 30px;
-  color: #ffdf00;
+  font-size: 40px;
+  margin-bottom: 20px;
 }
 
-/* 彩帶 */
-.confetti {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  background: gold;
-  animation: fall 3s linear forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-/* 公布畫面 */
 #summary {
   display: none;
-  padding: 30px;
+  padding: 40px;
+  font-size: 24px;
 }
 
 table {
-  margin: 20px auto;
+  margin: auto;
   border-collapse: collapse;
-  color: #fff;
 }
 
 td, th {
-  border: 1px solid gold;
-  padding: 8px 16px;
+  border: 2px solid gold;
+  padding: 12px 24px;
 }
 </style>
 </head>
@@ -166,26 +135,15 @@ td, th {
 <h1>🎉 2026 研發部尾牙宴｜大獎帶回家！ 🎉</h1>
 
 <div id="desc">
-獎金分級：<br>
-1200 元 × 4 位｜2000 元 × 4 位｜3000 元 × 3 位<br>
-5000 元 × 1 位｜7000 元 × 1 位｜10000 元 × 1 位<br><br>
-🎯 抽獎原則：每人僅一次機會，系統隨機，抽中即移除
+獎金依序抽出（系統自動）：<br>
+1200×4 → 2000×4 → 3000×3 → 5000 → 7000 → 10000<br><br>
+🎯 每人僅一次機會，抽中即移除
 </div>
 
-<div id="controls">
 <input type="file" accept="image/*" onchange="addPlayer(event)">
-<input id="nameInput" placeholder="輸入名字">
+<input id="nameInput" placeholder="輸入名字" style="font-size:22px;">
 <br>
-<select id="prize">
-  <option value="1200">1200 元</option>
-  <option value="2000">2000 元</option>
-  <option value="3000">3000 元</option>
-  <option value="5000">5000 元</option>
-  <option value="7000">7000 元</option>
-  <option value="10000">10000 元</option>
-</select>
 <button id="drawBtn" onclick="startDraw()">開始抽獎</button>
-</div>
 
 <div id="grid"></div>
 
@@ -197,25 +155,15 @@ td, th {
 </div>
 
 <div id="winner" onclick="this.style.display='none'">
-  <div id="prizeTextWin"></div>
+  <div id="prizeText"></div>
   <img id="winnerImg">
-  <h2 id="winnerName"></h2>
+  <h2 id="winnerName" style="font-size:40px;color:white;"></h2>
 </div>
 
 <div id="summary">
-  <h1>🎊 中獎結果公布 🎊</h1>
-  <p>
-  抽獎依據：<br>
-  ✔ 抽獎前完成報名<br>
-  ✔ 每人僅一次中獎機會<br>
-  ✔ 每次從尚未中獎名單中隨機抽出<br>
-  ✔ 中獎即自名單移除，無人工干預
-  </p>
-
+  <h1>🎊 中獎名單 🎊</h1>
   <table>
-    <thead>
-      <tr><th>姓名</th><th>中獎金額</th></tr>
-    </thead>
+    <thead><tr><th>姓名</th><th>金額</th></tr></thead>
     <tbody id="resultTable"></tbody>
   </table>
 </div>
@@ -223,103 +171,105 @@ td, th {
 <script>
 let players = [];
 let results = [];
-let slotTimer = null;
+
+/* 獎金池（不可重複） */
+let prizePool = [
+  ...Array(4).fill(1200),
+  ...Array(4).fill(2000),
+  ...Array(3).fill(3000),
+  5000, 7000, 10000
+];
 
 function addPlayer(e) {
-  const name = document.getElementById("nameInput").value.trim();
+  const name = nameInput.value.trim();
   if (!name) return alert("請輸入名字");
   const reader = new FileReader();
   reader.onload = () => {
     players.push({ name, img: reader.result });
     render();
-    document.getElementById("nameInput").value = "";
+    nameInput.value = "";
   };
   reader.readAsDataURL(e.target.files[0]);
 }
 
 function render() {
-  const grid = document.getElementById("grid");
   grid.innerHTML = "";
   players.forEach(p => {
-    const d = document.createElement("div");
-    d.className = "card";
-    d.innerHTML = `<img class="avatar" src="${p.img}"><div class="name">${p.name}</div>`;
-    grid.appendChild(d);
+    grid.innerHTML += `
+      <div>
+        <img class="avatar" src="${p.img}">
+        <div class="name">${p.name}</div>
+      </div>`;
   });
 }
 
 function startDraw() {
-  if (!players.length) return alert("沒有人可抽");
-  document.getElementById("drawBtn").disabled = true;
-  const prize = document.getElementById("prize").value;
-  countdown(3, prize);
+  if (!players.length || !prizePool.length) return;
+  drawBtn.disabled = true;
+  countdown(3);
 }
 
-function countdown(n, prize) {
-  const cd = document.getElementById("countdown");
-  cd.style.display = "flex";
-  cd.innerText = n;
+function countdown(n) {
+  countdownEl.style.display = "flex";
+  countdownEl.innerText = n;
   if (n > 1) {
-    setTimeout(() => countdown(n - 1, prize), 1000);
+    setTimeout(() => countdown(n - 1), 1000);
   } else {
     setTimeout(() => {
-      cd.style.display = "none";
-      slot(prize);
+      countdownEl.style.display = "none";
+      slot();
     }, 1000);
   }
 }
 
-function slot(prize) {
-  const s = document.getElementById("slot");
-  const img = document.getElementById("slotImg");
-  document.getElementById("prizeText").innerText = `💰 本次獎金：${prize} 元`;
-  s.style.display = "flex";
+function slot() {
+  const prize = prizePool[0];
+  prizeText.innerText = `💰 本次獎金：${prize} 元`;
+  slotEl.style.display = "flex";
 
-  slotTimer = setInterval(() => {
-    const p = players[Math.floor(Math.random() * players.length)];
-    img.src = p.img;
+  const timer = setInterval(() => {
+    slotImg.src = players[Math.random() * players.length | 0].img;
   }, 100);
 
   setTimeout(() => {
-    clearInterval(slotTimer);
-    s.style.display = "none";
+    clearInterval(timer);
+    slotEl.style.display = "none";
     draw(prize);
   }, 2000);
 }
 
 function draw(prize) {
-  const index = Math.floor(Math.random() * players.length);
-  const winner = players.splice(index, 1)[0];
-  results.push({ name: winner.name, prize });
-  document.getElementById("winnerImg").src = winner.img;
-  document.getElementById("winnerName").innerText = winner.name;
-  document.getElementById("prizeTextWin").innerText = `🎉 中獎金額：${prize} 元`;
-  document.getElementById("winner").style.display = "flex";
+  prizePool.shift();
+  const i = Math.random() * players.length | 0;
+  const w = players.splice(i, 1)[0];
+  results.push({ name: w.name, prize });
+
+  winnerImg.src = w.img;
+  winnerName.innerText = w.name;
+  prizeText.innerText = `🎉 中獎金額：${prize} 元`;
+  winner.style.display = "flex";
+
   render();
-  confetti();
-  document.getElementById("drawBtn").disabled = false;
+  drawBtn.disabled = false;
 
-  if (!players.length) showSummary();
-}
-
-function confetti() {
-  for (let i = 0; i < 120; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.style.left = Math.random() * window.innerWidth + "px";
-    c.style.top = "-10px";
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3000);
-  }
+  if (!prizePool.length) showSummary();
 }
 
 function showSummary() {
-  document.getElementById("summary").style.display = "block";
-  const tb = document.getElementById("resultTable");
+  summary.style.display = "block";
   results.forEach(r => {
-    tb.innerHTML += `<tr><td>${r.name}</td><td>${r.prize}</td></tr>`;
+    resultTable.innerHTML += `<tr><td>${r.name}</td><td>${r.prize}</td></tr>`;
   });
 }
+
+/* 金色亮粉 */
+setInterval(() => {
+  const s = document.createElement("div");
+  s.className = "sparkle";
+  s.style.left = Math.random() * window.innerWidth + "px";
+  document.body.appendChild(s);
+  setTimeout(() => s.remove(), 6000);
+}, 120);
 </script>
 
 </body>
